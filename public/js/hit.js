@@ -218,7 +218,8 @@ export default React.createClass({
 
         let className = 'btn btn-link';
         if (link.class) className = `${className} ${link.class}`;
-        return <a href={link.url} className={className} target='_blank'>
+        /*return <a href={link.url} className={className} target='_blank'>*/
+        return <a href={link.url} className={className}>
             {link.icon && <i className={'fa ' + link.icon}></i>}
             {' ' + link.title + ' '}
         </a>;
