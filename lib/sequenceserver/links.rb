@@ -7,7 +7,8 @@ module SequenceServer
     include ERB::Util
     alias encode url_encode
 
-    LIS_PATTERN = /(.*?)(\.\d+)?$/
+    #would be hard not to match it!
+    LIS_PATTERN = /(.*?)/
     NCBI_ID_PATTERN    = /gi\|(\d+)\|/
     UNIPROT_ID_PATTERN = /sp\|(\w+)\|/
     PFAM_ID_PATTERN = /(PF\d{5}\.?\d*)/
@@ -68,25 +69,13 @@ module SequenceServer
 
     def lis
       return nil unless id.match(LIS_PATTERN)
-      gene_id = Regexp.last_match[1]
-      #puts(id + " " + gene_id)
-      require "net/http"
-      require "uri"
-      require "json"
-
-      uri = URI("https://legumeinfo.org/gene_links/"+gene_id+"/json")
-      http = Net::HTTP.start(uri.host, uri.port,
-          :use_ssl => uri.scheme == 'https')
-      request = Net::HTTP::Get.new uri
-      res = http.request(request)
-      response = JSON.parse(res.body)
-      i = 1
-      return response.map do |obj|
-        #puts(i.to_s + " " + obj['href'])
-        newobj = {'icon' => 'fa-link', 'url' => obj['href'], 'title' => obj['text'], 'order' => i}
-        i = i+1
-        newobj
-      end
+      url = "https://www.legumefederation.org/en/linkout_mgr/?gene=" + id
+      {
+        order: 2,
+        title: 'LIS linkouts',
+        url:   url,
+        icon:  'fa-link'
+      }
     end
 
     def ncbi

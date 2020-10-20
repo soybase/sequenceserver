@@ -39,8 +39,6 @@ module SequenceServer
       def links
         links = Links.instance_methods.map { |m| send m }
         links.compact!
-        links.flatten!
-        links.map { |link| puts(link[:title])}
         links.sort_by { |link| [link[:order], link[:title]] }
       end
 
