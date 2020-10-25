@@ -7,13 +7,6 @@ module SequenceServer
     include ERB::Util
     alias encode url_encode
 
-    #would be hard not to match it!
-    LIS_PATTERN = /(.*?)/
-    NCBI_ID_PATTERN    = /gi\|(\d+)\|/
-    UNIPROT_ID_PATTERN = /sp\|(\w+)\|/
-    PFAM_ID_PATTERN = /(PF\d{5}\.?\d*)/
-    RFAM_ID_PATTERN = /(RF\d{5})/
-
     # Link generators are methods that return a Hash as defined below.
     #
     # {
@@ -68,66 +61,23 @@ module SequenceServer
     #     hit_coords = coordinates[1]
 
     def lis
-      return nil unless id.match(LIS_PATTERN)
-      url = "https://www.legumefederation.org/en/linkout_mgr/?gene=" + id
-      {
-        order: 2,
-        title: 'LIS linkouts',
-        url:   url,
-        icon:  'fa-link'
-      }
-    end
-
-    def ncbi
-      return nil unless id.match(NCBI_ID_PATTERN) or title.match(NCBI_ID_PATTERN)
-      ncbi_id = Regexp.last_match[1]
-      ncbi_id = encode ncbi_id
-      url = "https://www.ncbi.nlm.nih.gov/#{dbtype}/#{ncbi_id}"
-      {
-        order: 2,
-        title: 'NCBI',
-        url:   url,
-        icon:  'fa-external-link'
-      }
-    end
-
-    def uniprot
-      return nil unless id.match(UNIPROT_ID_PATTERN) or title.match(UNIPROT_ID_PATTERN)
-      uniprot_id = Regexp.last_match[1]
-      uniprot_id = encode uniprot_id
-      url = "https://www.uniprot.org/uniprot/#{uniprot_id}"
-      {
-        order: 2,
-        title: 'UniProt',
-        url:   url,
-        icon:  'fa-external-link'
-      }
-    end
- 
-    def pfam
-      return nil unless id.match(PFAM_ID_PATTERN) or title.match(PFAM_ID_PATTERN)
-      pfam_id = Regexp.last_match[1]
-      pfam_id = encode pfam_id
-      url = "https://pfam.xfam.org/family/#{pfam_id}"
-      {
-        order: 2,
-        title: 'Pfam',
-        url:   url,
-        icon:  'fa-external-link'
-      }
-    end
-
-    def rfam
-      return nil unless id.match(RFAM_ID_PATTERN) or title.match(RFAM_ID_PATTERN)
-      rfam_id = Regexp.last_match[1]
-      rfam_id = encode rfam_id
-      url = "https://rfam.xfam.org/family/#{rfam_id}"
-      {
-        order: 2,
-        title: 'Rfam',
-        url:   url,
-        icon:  'fa-external-link'
-      }
+      if id.match("gnm.*\.ann") 
+          url = "https://www.legumefederation.org/en/linkout_mgr/?gene=" + id
+          {
+            order: 2,
+            title: 'LIS gene linkouts',
+            url:   url,
+            icon:  'fa-link'
+          }
+      else
+          url = "https://www.legumefederation.org/en/linkout_mgr/?seqname=" + id + "&start=" + coordinates[1][0].to_s() + "&end=" + coordinates[1][1].to_s()
+          {
+            order: 2,
+            title: 'LIS region linkouts',
+            url:   url,
+            icon:  'fa-link'
+          }
+      end
     end
   end
 end
