@@ -9,4 +9,4 @@ services:
     healthcheck:
       test: curl -qo /dev/null http://localhost:4567/searchdata.json
     ports:
-      - "4567:4567"
+      - "4568:4567"
