@@ -94,7 +94,8 @@ module SequenceServer
         erb :search, layout: true
       else
         job = Job.create(params)
-        redirect to("/#{job.id}")
+# NOTE: customize this route when hosting at sub-uri
+        redirect to("/sequenceserver/#{job.id}")
       end
     end
 
