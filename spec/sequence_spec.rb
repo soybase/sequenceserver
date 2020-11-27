@@ -41,7 +41,7 @@ module SequenceServer
   end
 
   describe 'Sequence retrieval' do
-    database_dir = File.join(__dir__, 'database')
+    database_dir = File.join(__dir__, 'database', 'v5')
 
     let 'a_normal_database_id' do
       Digest::MD5.hexdigest File.join(database_dir, 'sample', 'proteins',
@@ -50,8 +50,7 @@ module SequenceServer
     end
 
     let 'funky_ids_database_id' do
-      Digest::MD5.hexdigest File.join(database_dir, 'funky_ids', 'v5',
-                                      'funky_ids.fa')
+      Digest::MD5.hexdigest File.join(database_dir, 'funky_ids', 'funky_ids.fa')
     end
 
     before :all do
@@ -81,19 +80,19 @@ PLYMVLALSQFITYLLILIVGEKENKIKEGMKMMGLNDSVF"
       sequences.length.should == 2
     end
 
-    # it 'should be able to retrieve sequences from database even if accession'\
-    #    'contains only numbers' do
-    #   Database.scan_databases_dir
-    #   sequences = Sequence.from_blastdb(123456, funky_ids_database_id)
-    #   sequences.length.should == 1
-    # end
-
-    it 'should be able to retrieve sequences from database for all kinds of'\
-       'funky accessions' do
-      funky_accessions = ['abcdef#', 'abc#def', '123#456'] # , '123456#']
+    it 'should be able to retrieve sequences even if sequence ids are funky' do
+      funky_accessions = ['gnl|dmel|ID',
+                          'gnl|abc|def', # note that the id was 'abc|def' in .fa
+                          'abcdef|ghijkl',
+                          'abcdef#',
+                          'abc#def',
+                          '123#456',
+                          '123456#',
+                          '123456'
+                         ]
       sequences = Sequence::Retriever.new(funky_accessions,
                                           funky_ids_database_id).sequences
-      sequences.length.should == 3
+      sequences.length.should == 8
     end
   end
 end

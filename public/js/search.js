@@ -7,6 +7,13 @@ import _ from 'underscore';
  */
 $.webshims.polyfill('forms');
 
+/**
+ * Clear sessionStorage on reload.
+*/
+if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+    sessionStorage.clear();
+}
+
 var Page = React.createClass({
     render: function () {
         return (
@@ -231,12 +238,13 @@ var Form = React.createClass({
         }.bind(this));
 
         /* Enable submitting form on Cmd+Enter */
-        $(document).bind('keydown', _.bind(function (e) {
-            if (e.ctrlKey && e.keyCode === 13 &&
-               !$('#method').is(':disabled')) {
-                $(this.getDOMNode()).trigger('submit');
+        $(document).on('keydown', (e)=> {
+            var $button = $('#method');
+            if (!$button.is(':disabled') &&
+                e.ctrlKey && e.key === 'Enter') {
+                $button.trigger('click');
             }
-        }, this));
+        });
     },
 
     determineBlastMethod: function () {
@@ -303,6 +311,17 @@ var Form = React.createClass({
         }
     },
 
+    handleNewTabCheckbox: function () {
+        setTimeout(() => {
+            if ($('#toggleNewTab').is(':checked')) {
+                $('#blast').attr('target', '_blank');
+            }
+            else {
+                $('#blast').attr('target', '_self');
+            }
+        });
+    },
+
     render: function () {
         return (
             <div className="container">
@@ -320,6 +339,15 @@ var Form = React.createClass({
                         onDatabaseTypeChanged={this.handleDatabaseTypeChanaged} />
                     <div className="form-group">
                         <Options ref="opts"/>
+                        <div className="col-md-2">
+                            <div className="form-group" style={{'textAlign': 'center', 'padding': '7px 0'}}>
+                                <label>
+                                    <input type="checkbox" id="toggleNewTab"
+                                        onChange={()=> { this.handleNewTabCheckbox(); }}
+                                    /> Open results in new tab
+                                </label>
+                            </div>
+                        </div>
                         <SearchButton ref="button" onAlgoChanged={this.handleAlgoChanged}/>
                     </div>
                 </form>
@@ -614,8 +642,7 @@ var MixedNotification = React.createClass({
                 style={{ display: 'none' }}>
                 <div
                     className="alert-danger col-md-10 col-md-offset-1">
-                    Detected: mixed nucleotide and amino-acid sequences. We
-                    can't handle that. Please try one sequence at a time.
+                    Error: mixed nucleotide and amino-acid sequences detected.
                 </div>
             </div>
         );
@@ -647,7 +674,7 @@ var Databases = React.createClass({
 
     handleClick: function (database) {
         var type = this.nselected() ? database.type : '';
-        this.setState({type: type});
+        if (type != this.state.type) this.setState({type: type});
     },
 
     handleToggle: function (toggleState, type) {
@@ -734,10 +761,6 @@ var Databases = React.createClass({
         );
     },
 
-    //shouldComponentUpdate: function (props, state) {
-    //return !(state.type && state.type === this.state.type);
-    //},
-
     componentDidUpdate: function () {
         if (this.databases() && this.databases().length === 1) {
             $('.databases').find('input').prop('checked',true);
@@ -747,10 +770,8 @@ var Databases = React.createClass({
         if (this.props.preSelectedDbs) {
             var selectors = this.props.preSelectedDbs.map(db => `input[value=${db.id}]`);
             $(...selectors).prop('checked',true);
-            setTimeout(() => {
-                this.handleClick(this.props.preSelectedDbs[0]);
-                this.props.preSelectedDbs = null;
-            });
+            this.handleClick(this.props.preSelectedDbs[0]);
+            this.props.preSelectedDbs = null;
         }
         this.props.onDatabaseTypeChanged(this.state.type);
     }
@@ -775,7 +796,7 @@ var Options = React.createClass({
             classNames += ' yellow-background';
         }
         return (
-            <div className="col-md-8">
+            <div className="col-md-7">
                 <div className="form-group">
                     <div className="col-md-12">
                         <div className="input-group">
@@ -913,7 +934,7 @@ var SearchButton = React.createClass({
         var multi = methods.length > 1;
 
         return (
-            <div className="col-md-4">
+            <div className="col-md-3">
                 <div className="form-group">
                     <div className="col-md-12">
                         <div
