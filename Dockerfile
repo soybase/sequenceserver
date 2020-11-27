@@ -71,3 +71,7 @@ RUN mkdir -p ~/.sequenceserver && touch ~/.sequenceserver/asked_to_join
 ENV PATH=/sequenceserver/bin:${PATH}
 ENTRYPOINT ["bundle", "exec"]
 CMD ["sequenceserver"]
+
+# soybase/legumeinfo: bake taxdb into image for efficiency
+# (emulate "bundle exec bin/sequenceserver --download-taxdb")
+RUN bash -o pipefail -c 'curl --ipv4 -C - ftp://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz | tar -C ~/.sequenceserver -xzf -'
