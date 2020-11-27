@@ -5,5 +5,6 @@ services:
   sequenceserver:
     build: .
     volumes_from: ["db"]
+    restart: always
     ports:
       - "4567:4567"
