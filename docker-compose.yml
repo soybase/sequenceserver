@@ -1,0 +1,9 @@
+services:
+  db:
+    build: db
+
+  sequenceserver:
+    build: .
+    volumes_from: ["db"]
+    ports:
+      - "4567:4567"
