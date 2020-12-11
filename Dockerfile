@@ -22,9 +22,8 @@ RUN bundle install --without=development
 # We will copy them from NCBI's docker image.
 FROM ncbi/blast:${BLAST_VERSION} AS ncbi-blast
 
-
 ## Stage 3: Puting it together.
-FROM ruby:2.7-slim-buster
+FROM ruby:2.7-slim-buster AS final
 
 LABEL Description="Intuitive local web frontend for the BLAST bioinformatics tool"
 LABEL MailingList="https://groups.google.com/forum/#!forum/sequenceserver"
@@ -71,6 +70,25 @@ RUN mkdir -p ~/.sequenceserver && touch ~/.sequenceserver/asked_to_join
 ENV PATH=/sequenceserver/bin:${PATH}
 ENTRYPOINT ["bundle", "exec"]
 CMD ["sequenceserver"]
+
+## Stage 4 (optional) minify CSS & JS.
+FROM node:15-alpine3.12 AS node
+
+RUN apk add --no-cache git
+WORKDIR /usr/src/app
+COPY ./package.json .
+RUN npm install
+ENV PATH=${PWD}/node_modules/.bin:${PATH}
+COPY public public
+RUN npm run-script build
+
+## Stage 5 (optional) minify
+FROM final AS minify
+
+COPY --from=node /usr/src/app/public/sequenceserver-*.min.js public/
+COPY --from=node /usr/src/app/public/css/sequenceserver.min.css public/css/
+
+FROM final
 
 # soybase/legumeinfo: bake taxdb into image for efficiency
 # (emulate "bundle exec bin/sequenceserver --download-taxdb")
