@@ -9,7 +9,8 @@ RUN printf '%s\n' '#!/bin/bash' 'set -o pipefail -o errexit -o nounset; curl ${D
 
 RUN curl https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Glycine_max/all_assembly_versions/GCF_000004515.5_Glycine_max_v2.1/GCF_000004515.5_Glycine_max_v2.1_assembly_structure/non-nuclear/assembled_chromosomes/FASTA/chrMT.fna.gz | gzip -dc | makeblastdb -parse_seqids -hash_index -dbtype nucl -taxid 3847 -title 'Glycine max mitochondrial genome' -out chrMT
 RUN curl https://ftp.ncbi.nlm.nih.gov/genomes/refseq/plant/Glycine_max/all_assembly_versions/GCF_000004515.5_Glycine_max_v2.1/GCF_000004515.5_Glycine_max_v2.1_assembly_structure/non-nuclear/assembled_chromosomes/FASTA/chrPltd.fna.gz | gzip -dc | makeblastdb -parse_seqids -hash_index -dbtype nucl -taxid 3847 -title 'Glycine max chloroplast genome' -out chrPltd
-RUN curl https://soybase.org/GlycineBlastPages/archives/fn_indels.nt.20140304.fasta.gz | gzip -dc | makeblastdb -hash_index -dbtype nucl -taxid 3847 -title 'Fast Neutron InDels Bolon et al. 2014' -out fn_indels.nt.20140304
+# causes SequenceServer incompatibility warning due to non-unique sequence IDs
+#RUN curl https://soybase.org/GlycineBlastPages/archives/fn_indels.nt.20140304.fasta.gz | gzip -dc | makeblastdb -hash_index -dbtype nucl -taxid 3847 -title 'Fast Neutron InDels Bolon et al. 2014' -out fn_indels.nt.20140304
 RUN mkblastdb Glycine_max/Wm82.gnm4.ann1.T8TQ/glyma.Wm82.gnm4.ann1.T8TQ.transcript.fna.gz nucl 3847 'Williams 82 Assembly 4 Annotation 1 (Wm82.a4.v1) Transcript Sequences'
 RUN mkblastdb Glycine_max/Wm82.gnm4.ann1.T8TQ/glyma.Wm82.gnm4.ann1.T8TQ.cds.fna.gz nucl 3847 'Williams 82 Assembly 4 Annotation 1 (Wm82.a4.v1) Coding Sequences'
 RUN mkblastdb Glycine_max/Wm82.gnm4.4PTR/glyma.Wm82.gnm4.4PTR.genome_main.fna.gz nucl 3847 'Williams 82 Assembly 4 Genomic Sequence (Wm82.a4)'
