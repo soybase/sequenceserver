@@ -38,3 +38,4 @@ RUN mkblastdb Glycine_soja/PI483463.gnm1.ann1.3Q3Q/glyso.PI483463.gnm1.ann1.3Q3Q
 RUN mkblastdb Glycine_soja/PI483463.gnm1.ann1.3Q3Q/glyso.PI483463.gnm1.ann1.3Q3Q.protein.faa.gz prot 3848 'Glycine soja PI483463 Protein Sequences'
 RUN mkblastdb Glycine_soja/PI483463.gnm1.YJWS/glyso.PI483463.gnm1.YJWS.genome_main.fna.gz nucl 3848 'Glycine soja PI483463 Genome Sequence'
 RUN mkblastdb Glycine_soja/PI483463.gnm1.ann1.3Q3Q/glyso.PI483463.gnm1.ann1.3Q3Q.cds.fna.gz nucl 3848 'Glycine soja PI483463 Coding Sequence'
+RUN mkblastdb Glycine_max/Wm82.gnm4.pan.W46N/glyma.Wm82.gnm4.pan.W46N.PanSoy_seq_not_in_Wm82.fna.gz nucl 3847 'PanSoy dataset: genomic sequence from 204 accessions but not in Wm82.a4'
